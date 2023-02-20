@@ -1,0 +1,43 @@
+.phone-model {
+  .ant-modal-content {
+    background-color: #00000000;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  .phone-model-content {
+    position: relative;
+    &__phone {
+      position: relative;
+      z-index: 2;
+    }
+    &__nav {
+      position: absolute;
+      top: 1%;
+      left: 50%;
+      box-sizing: border-box;
+      width: 97%;
+      height: 72px;
+      padding-top: 40px;
+      color: #555;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      background: #f3f4f6;
+      border-radius: 38px 38px 0 0;
+      transform: translateX(-50%);
+    }
+    &__ct {
+      position: absolute;
+      top: calc(1% + 72px);
+      left: 50%;
+      z-index: 999;
+      width: 93.4%;
+      height: calc(100% - 1.07% - 72px - 5px);
+      padding: 10px 10px 15px;
+      overflow-y: scroll;
+      background-color: #fff;
+      border-radius: 0 0 49px 49px;
+      transform: translateX(-50%);
+    }
+  }
+}
