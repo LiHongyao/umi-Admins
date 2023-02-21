@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 11:39:12
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 01:15:45
+ * @LastEditTime: 2023-02-21 11:12:10
  * @Description:
  */
 /**
@@ -24,7 +24,7 @@ export default [
   { path: '/banners', component: '@/pages/Banners', name: '轮播图', icon: 'icon-lunbotu' },
   { path: '/audit', component: '@/pages/Audit', name: '作品审核', icon: 'icon-check' },
   { path: '/configs', component: '@/pages/Configs', name: '配置管理', icon: 'icon-category' },
-  { path: '/news', component: '@/pages/News', name: '新闻管理', icon: 'icon-category' },
+  { path: '/news', component: '@/pages/News', name: '新闻管理', icon: 'icon-order' },
   {
     path: '/systems',
     name: '系统管理',

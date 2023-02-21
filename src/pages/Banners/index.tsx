@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 15:30:38
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-20 17:24:28
+ * @LastEditTime: 2023-02-21 11:13:01
  * @Description:
  */
 import AliyunOSSUpload from '@/components/@lgs/AliyunOSSUpload';
@@ -124,12 +124,12 @@ const Banners: React.FC = () => {
           type="primary"
           size="small"
           onClick={() => {
-            // vForm.current?.setFieldsValue({
-            //   ...record,
-            //   bannerPic: [{ url: record.bannerPic }],
-            //   showTime: [record.start, record.end],
-            // });
-            // setShowForm(true);
+            vForm.current?.setFieldsValue({
+              ...record,
+              bannerPic: [{ url: record.bannerPic }],
+              showTime: [record.start, record.end],
+            });
+            setOpenForm(true);
           }}
         >
           编辑
