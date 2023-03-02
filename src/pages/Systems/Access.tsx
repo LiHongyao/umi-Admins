@@ -1,14 +1,7 @@
-/*
- * @Author: Lee
- * @Date: 2022-05-22 17:06:56
- * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 00:25:57
- * @Description:
- */
 import services from '@/services';
-import { DeleteOutlined, FormOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FormOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalForm, PageContainer, ProFormInstance, ProFormText } from '@ant-design/pro-components';
-import { message, Modal, Space, Tree } from 'antd';
+import { Button, message, Modal, Space, Tree } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 
 const Access: React.FC = () => {
@@ -22,6 +15,7 @@ const Access: React.FC = () => {
   // - methods
   const getData = async () => {
     const resp = await services.systems.access();
+    vForm.current?.resetFields();
     if (resp && resp.code === 200) {
       setTreeData(resp.data);
     }
@@ -30,6 +24,7 @@ const Access: React.FC = () => {
   // -- effects
   useEffect(() => {
     getData();
+   
   }, []);
 
   // - events
@@ -38,24 +33,46 @@ const Access: React.FC = () => {
     Modal.confirm({
       content: '您确定要删除该项及其下所有子类么？',
       cancelText: '点错了',
-      onOk: () => {},
+      onOk: async () => { 
+        message.loading("处理中...", 20 * 1000);
+        const resp = await services.systems.accessDelete(nodeData.id);
+        if(resp && resp.code === 200) {
+          getData();
+        }
+      },
     });
   };
 
   const onInsert = (nodeData: API.SystemsAccessProps) => {
-    vForm.current?.resetFields();
+    vForm.current?.setFieldsValue({
+      parentId: nodeData.id
+    });
     setOpenModal(true);
   };
 
   const onEdit = (nodeData: API.SystemsAccessProps) => {
     vForm.current?.setFieldsValue({
-      ...nodeData,
+      authId: nodeData.id,
+      name: nodeData.name,
+      code: nodeData.code
     });
     setOpenModal(true);
   };
   // -- renders
   return (
-    <PageContainer subTitle="Tips：您可以在此页面管理权限~" header={{ breadcrumb: {} }}>
+    <PageContainer subTitle="Tips：您可以在此页面管理权限~" header={{
+      breadcrumb: {},
+      extra: [
+        <Button type="primary" key={"ADD_ACCESS"} shape="round" onClick={() => {
+          vForm.current?.resetFields();
+          setOpenModal(true);
+        }}>
+          <PlusOutlined />
+          <span>新增权限</span>
+        </Button>
+      ]
+    }}
+    >
       {/* 树形解构 */}
       <Tree
         style={{ padding: 16 }}
@@ -78,7 +95,7 @@ const Access: React.FC = () => {
       />
       <ModalForm
         formRef={vForm}
-        title={!!vForm.current?.getFieldValue('id') ? '编辑权限' : '新建权限'}
+        title={!!vForm.current?.getFieldValue('authId') ? '编辑权限' : '新建权限'}
         open={openModal}
         width={400}
         modalProps={{
@@ -86,26 +103,29 @@ const Access: React.FC = () => {
           onCancel: () => setOpenModal(false),
         }}
         onFinish={async (value) => {
-          console.log(value);
-          message.loading('处理中...');
-          setTimeout(() => {
-            message.destroy();
+          message.loading('处理中...', 20 * 1000);
+          const resp = await services.systems.accessAddOrUpdate(value);
+          if(resp && resp.code === 200) {
+            getData();
             setOpenModal(false);
-          }, 1000);
+          }
         }}
       >
-        <ProFormText name="id" noStyle hidden />
+        <ProFormText name="parentId" noStyle hidden />
+        <ProFormText name="authId" noStyle hidden />
         <ProFormText
           label="权限名称"
           name="name"
           placeholder={'请输入权限名称'}
           rules={[{ required: true }]}
+          extra={"Tips：权限名称一般为页面名称或者相应的操作描述"}
         />
         <ProFormText
           label="权限代码"
           name="code"
           placeholder={'请输入权限代码'}
           rules={[{ required: true }]}
+          extra={"Tips：权限代码尽量使用标准缩写，见名知意"}
         />
       </ModalForm>
     </PageContainer>

@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 17:26:37
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 00:35:12
+ * @LastEditTime: 2023-03-02 14:43:34
  * @Description:
  */
 
@@ -15,12 +15,13 @@ import {
   PageContainer,
   ProColumns,
   ProForm,
+  ProFormDependency,
   ProFormInstance,
   ProFormSelect,
   ProFormText,
   ProTable,
 } from '@ant-design/pro-components';
-import { Avatar, Button, message, Modal } from 'antd';
+import { Avatar, Button, message, Modal, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 
 const Users: React.FC = () => {
@@ -31,6 +32,16 @@ const Users: React.FC = () => {
   // -- state
   const [tips, setTips] = useState('');
   const [openForm, setOpenForm] = useState(false);
+
+  // -- methods
+  const switchStatus = async (id: string, tips: string) => {
+    message.loading("处理中...", 20 * 1000);
+    const resp = await services.systems.userSwichStatus(id);
+    if(resp && resp.code === 200) {
+      setTips(tips);
+      vTable.current?.reload();
+    }
+  }
 
   // -- columns
   const columns: ProColumns<API.SystemsUserProps>[] = [
@@ -49,8 +60,8 @@ const Users: React.FC = () => {
       valueType: 'select',
       fieldProps: { placeholder: '全部', allowClear: true },
       valueEnum: {
-        0: { text: '禁用', status: 'Default' },
-        1: { text: '启用', status: 'Processing' },
+        0: { text: '已禁用', status: 'Default' },
+        1: { text: '已启用', status: 'Processing' },
       },
     },
     {
@@ -61,21 +72,20 @@ const Users: React.FC = () => {
       fieldProps: {
         fieldNames: {
           label: 'roleName',
-          value: 'roleId',
+          value: 'id',
         },
       },
       request: async () => {
-        return [
-          { roleId: 1, roleName: '管理员' },
-          { roleId: 2, roleName: '市场部' },
-          { roleId: 3, roleName: '运营部' },
-          { roleId: 4, roleName: '品牌部' },
-        ];
+        const resp = await services.systems.roles();
+        if(resp && resp.code === 200) {
+          return resp.data;
+        }
+        return [];
       },
     },
     {
       title: '创建时间',
-      dataIndex: 'createTime',
+      dataIndex: 'createDate',
       valueType: 'date',
       hideInSearch: true,
     },
@@ -84,12 +94,9 @@ const Users: React.FC = () => {
       title: '操作',
       key: 'action',
       hideInSearch: true,
-      render: (_, record) => [
-        record.state === 1 && (
+      render: (_, record) => (<Space>
+         {record.state === 1 && (
           <Button
-            key={'close'}
-            type="link"
-            size="middle"
             disabled={!record.state}
             danger
             onClick={() => {
@@ -97,47 +104,29 @@ const Users: React.FC = () => {
                 content: '您确定要禁用该用户么？',
                 okText: '确定',
                 cancelText: '点错了',
-                onOk: () => {
-                  message.loading('处理中...', 20 * 1000);
-                  setTimeout(() => {
-                    setTips('已禁用');
-                    vTable.current?.reload();
-                  }, 1000);
-                },
+                onOk: () => switchStatus(record.id, '已禁用'),
               });
             }}
           >
             禁用
           </Button>
-        ),
-        record.state === 0 && (
+        )}
+        {record.state === 0 && (
           <Button
-            key={'open'}
-            type="link"
-            size="middle"
             disabled={!!record.state}
             onClick={() => {
               Modal.confirm({
                 content: '您确定要启用该用户么？',
                 okText: '确定',
                 cancelText: '点错了',
-                onOk: () => {
-                  message.loading('处理中...', 20 * 1000);
-                  setTimeout(() => {
-                    setTips('已启用');
-                    vTable.current?.reload();
-                  }, 1000);
-                },
+                onOk: () => switchStatus(record.id, '已启用')
               });
             }}
           >
             启用
           </Button>
-        ),
+        )}
         <Button
-          key={'edit'}
-          type="link"
-          size="middle"
           onClick={() => {
             vForm.current?.setFieldsValue({
               ...record,
@@ -147,8 +136,25 @@ const Users: React.FC = () => {
           }}
         >
           编辑
-        </Button>,
-      ],
+        </Button>
+        <Button
+          onClick={ () => {
+          Modal.confirm({
+            content: "您确定要重置该用户的密码么？",
+            cancelText: "点错了",
+            onOk: async () => {
+              message.loading("处理中...", 20 * 1000);
+              const resp = await services.systems.userResetPsw(record.id);
+              if(resp && resp.code === 200) {
+               message.success("密码已重置为【123456】")
+              }
+            }
+          })
+          }}
+        >
+          重置密码
+        </Button>
+      </Space>)
     },
   ];
 
@@ -200,13 +206,16 @@ const Users: React.FC = () => {
           onCancel: () => setOpenForm(false),
         }}
         onFinish={async (value) => {
-          console.log(value);
-          message.loading('处理中，请稍后...');
-          setTimeout(() => {
-            message.destroy();
+          message.loading('处理中，请稍后...', 20 * 1000);
+          const resp = await services.systems.userAddAndUpdate({
+            ...value,
+            avatar: value.avatar[0].url
+          });
+          if(resp && resp.code === 200) {
+            setTips(value.id ? '编辑成功' : "添加成功");
             setOpenForm(false);
             vTable.current?.reload();
-          }, 1000);
+          }
         }}
       >
         <ProFormText name="id" noStyle hidden />
@@ -216,7 +225,7 @@ const Users: React.FC = () => {
           rules={[{ required: true, message: '请上传轮播图' }]}
           extra={'Tips：上传尺寸 → 100x100'}
         >
-          <AliyunOSSUpload dir="avatar" />
+          <AliyunOSSUpload dir="fruites_pro" />
         </ProForm.Item>
         <ProFormText
           label="账号"
@@ -225,13 +234,18 @@ const Users: React.FC = () => {
           placeholder={'请输入登录账号'}
           rules={[{ required: true }]}
         />
-        <ProFormText.Password
-          label="密码"
-          name="password"
-          fieldProps={{ size: 'large' }}
-          placeholder={'请输入登录密码'}
-          rules={[{ required: true }]}
-        />
+        <ProFormDependency name={['id']}>
+          {({id }) => {
+            return id ? null :  <ProFormText.Password
+            label="密码"
+            name="password"
+            fieldProps={{ size: 'large' }}
+            placeholder={'请输入登录密码'}
+            rules={[{ required: true }]}
+          />;
+          }}
+        </ProFormDependency>
+       
         <ProFormText
           label="姓名"
           name="nickname"
@@ -246,15 +260,16 @@ const Users: React.FC = () => {
             size: 'large',
             fieldNames: {
               label: 'roleName',
-              value: 'roleId',
+              value: 'id',
             },
           }}
-          request={async () => [
-            { roleId: 1, roleName: '管理员' },
-            { roleId: 2, roleName: '市场部' },
-            { roleId: 3, roleName: '运营部' },
-            { roleId: 4, roleName: '品牌部' },
-          ]}
+          request={async () =>  {
+            const resp = await services.systems.roles();
+            if(resp && resp.code === 200) {
+              return resp.data;
+            }
+            return [];
+          }}
           placeholder="请选择"
           rules={[{ required: true, message: '请选择用户角色' }]}
         />

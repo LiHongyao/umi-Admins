@@ -9,12 +9,12 @@
 import { request } from '@umijs/max';
 
 export async function list(data: { current: number; pageSize: number }) {
-  return request<API.BaseResponse<API.BannerItemProps[]>>('/admin/banners/list', {
+  return request<API.BaseResponse<API.BannerItemProps[]>>('/api/banners/list', {
     method: 'POST',
     data,
   });
 }
 
 export async function getShowLocations() {
-  return request<API.BaseResponse<API.BannerLocationProps[]>>('/admin/banners/show-location');
+  return request<API.BaseResponse<API.BannerLocationProps[]>>('/api/banners/locations');
 }

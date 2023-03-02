@@ -2,23 +2,27 @@
  * @Author: Lee
  * @Date: 2023-02-20 12:14:41
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-20 13:37:16
+ * @LastEditTime: 2023-03-02 16:03:55
  * @Description:
  */
 
 import { request } from '@umijs/max';
 
-/** 用户登录（账号密码） */
-export async function login(data: API.LoginWithAccount) {
-  return request<API.BaseResponse<API.LoginResult>>('/admin/auths/login', {
+
+
+
+
+export async function list(data: any) {
+  return request<API.BaseResponse<API.UserProps[]>>('/api/users/list', {
     method: 'POST',
     data,
   });
 }
 
-/** 退出登录 */
-export async function logout() {
-  return request<API.BaseResponse<any>>('/admin/auths/logout', {
+export async function feedbacks(data: any) {
+  return request<API.BaseResponse<API.FeedbackItemProps[]>>('/api/feedback/list', {
     method: 'POST',
+    data,
   });
 }
+

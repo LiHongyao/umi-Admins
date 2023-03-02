@@ -2,34 +2,37 @@
  * @Author: Lee
  * @Date: 2023-02-21 01:09:24
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 01:13:02
+ * @LastEditTime: 2023-03-02 15:43:14
  * @Description:
  */
 import { GridContent } from '@ant-design/pro-components';
 import { Menu } from 'antd';
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import Categories from './Categories';
 import styles from './index.less';
 
-type SettingsStateKeys = 'base' | 'security' | 'binding' | 'notification';
+
+const menuMap = {
+  base: '基本设置',
+  security: '安全设置',
+  categories: "分类管理",
+};
+type SettingsStateKeys = keyof typeof menuMap;
 type SettingsState = {
   mode: 'inline' | 'horizontal';
   selectKey: SettingsStateKeys;
 };
 
 const Settings: React.FC = () => {
-  const menuMap: Record<string, React.ReactNode> = {
-    base: '基本设置',
-    security: '安全设置',
-    binding: '账号绑定',
-    notification: '新消息通知',
-  };
-
+  // -- state
   const [initConfig, setInitConfig] = useState<SettingsState>({
     mode: 'inline',
     selectKey: 'base',
   });
+  // -- refs
   const dom = useRef<HTMLDivElement>();
 
+  // -- methods
   const resize = () => {
     requestAnimationFrame(() => {
       if (!dom.current) {
@@ -47,6 +50,7 @@ const Settings: React.FC = () => {
     });
   };
 
+  // -- effects
   useLayoutEffect(() => {
     if (dom.current) {
       window.addEventListener('resize', resize);
@@ -57,9 +61,7 @@ const Settings: React.FC = () => {
     };
   }, [dom.current]);
 
-  const getMenu = () => {
-    return Object.keys(menuMap).map((item) => ({ key: item, label: menuMap[item] }));
-  };
+  const getMenu = () => Object.keys(menuMap).map((item) => ({ key: item, label: menuMap[item as SettingsStateKeys] }));
 
   const renderChildren = () => {
     const { selectKey } = initConfig;
@@ -68,10 +70,8 @@ const Settings: React.FC = () => {
         return <div>1</div>;
       case 'security':
         return <div>2</div>;
-      case 'binding':
-        return <div>3</div>;
-      case 'notification':
-        return <div>4</div>;
+      case "categories": 
+      return <Categories />
       default:
         return null;
     }

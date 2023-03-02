@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 11:39:12
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 11:12:10
+ * @LastEditTime: 2023-03-02 16:15:08
  * @Description:
  */
 /**
@@ -20,15 +20,30 @@
 export default [
   { path: '/', redirect: '/login' },
   { path: '/login', layout: false, component: '@/pages/Login' },
-  { path: '/dashboard', component: '@/pages/Dashboard', name: '数据看板', icon: 'icon-dashboard' },
-  { path: '/banners', component: '@/pages/Banners', name: '轮播图', icon: 'icon-lunbotu' },
-  { path: '/audit', component: '@/pages/Audit', name: '作品审核', icon: 'icon-check' },
-  { path: '/configs', component: '@/pages/Configs', name: '配置管理', icon: 'icon-category' },
-  { path: '/news', component: '@/pages/News', name: '新闻管理', icon: 'icon-order' },
+  { path: '/dashboard', component: '@/pages/Dashboard', name: '数据看板', icon: 'icon-shujukanban' },
+  { path: '/banners', component: '@/pages/Banners', name: '轮播广告', icon: 'icon-lunbotuguanli' },
+  { path: '/audit', component: '@/pages/Audit', name: '作品审核', icon: 'icon-shenhe' },
+ 
+  { path: '/news', component: '@/pages/News', name: '新闻管理', icon: 'icon-xinwen' },
+  { path: '/users', name: '用户管理', icon: 'icon-yonghuguanli',
+    routes: [
+      {
+        path: "/users/list",
+        name: "用户列表",
+        component: '@/pages/Users/List'
+      },
+      {
+        path: "/users/feedback",
+        name: "意见反馈",
+        component: '@/pages/Users/Feedback'
+      }
+    ] 
+  },
+  { path: '/configs', component: '@/pages/Configs', name: '配置管理', icon: 'icon-peizhi' },
   {
     path: '/systems',
     name: '系统管理',
-    icon: 'icon-sys',
+    icon: 'icon-xitong',
     routes: [
       {
         path: '/systems/access',

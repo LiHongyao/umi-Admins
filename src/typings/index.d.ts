@@ -1,10 +1,11 @@
 /*
  * @Author: Lee
- * @Date: 2023-02-20 11:59:13
+ * @Date: 2023-03-02 13:50:38
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 01:19:06
- * @Description:
+ * @LastEditTime: 2023-03-02 16:07:02
+ * @Description: 
  */
+
 
 declare namespace API {
   /**********************
@@ -61,18 +62,17 @@ declare namespace API {
     };
   };
   /**********************
-   ** Banner 管理
+   ** 轮播广告
    **********************/
   type BannerItemProps = {
-    id: string;
-    state: number;
-    sort: number;
-    jumpUrl: string;
-    bannerPic: string;
-    weight: string;
-    start: string;
-    end: string;
-    locationCode: string;
+    id: string; /** ID */
+    state: number; /** 启用/禁用状态 */
+    bannerPic: string; /** 轮播图片链接 */
+    weight: string; /** 权重 */
+    jumpUrl: string; /** 跳转链接 */
+    start: string; /** 展示开始时间 */
+    end: string; /** 展示结束时间 */
+    locationCode: string;  /** 展示位置编码 */
   };
   type BannerLocationProps = {
     locationCode: string;
@@ -90,25 +90,54 @@ declare namespace API {
   };
   type SystemRoleProps = {
     id: string;
-    name: string;
-    createBy: string;
-    createTime: string;
-    updateBy: string;
-    updateTime: string;
-    auths: Array<SystemsAccessProps>;
+    roleName: string; /** 角色名称 */
+    createBy: string; /** 创建者 */
+    createDate: string; /** 创建时间 */
+    updateBy: string; /** 更新者 */
+    updateDate: string; /** 更新时间 */
+    authIds: Array<string>; /** 权限列表 */
   };
   type SystemsUserProps = {
     id: string;
-    avatar: string /** 用户头像 */;
-    nickname: string /** 用户昵称 */;
     username: string /** 用户名 */;
-    password: string /** 密码 */;
-    createBy: string /** 创建者 */;
-    createTime: string /** 创建时间 */;
-    lastLoginTime: string /** 最后登录时间 */;
+    nickname: string /** 用户昵称 */;
+    avatar: string /** 用户头像 */;
     roleId: string /** 角色ID */;
+    createBy: string /** 创建者 */;
+    createDate: string /** 创建时间 */;
+    lastLoginTime: string /** 最后登录时间 */;
     state: number /** 状态 */;
   };
+
+   /**********************
+   ** 分类管理
+   **********************/
+   type CategoriesProps = {
+    name: string;
+    id: string;
+  };
+
+   /**********************
+   ** 用户列表
+   **********************/
+   type UserProps = {
+    id: string;
+    nickname: string;
+    avatarUrl: string;
+    phone: string;
+    createDate: string;
+  };
+
+  type FeedbackItemProps = {
+    id: string;
+    createDate: string;
+    content: string;
+    nickname: string;
+    phone: string;
+    avatarUrl: string;
+  }
+
+  
   /**********************
    ** 审核列表
    **********************/
@@ -127,6 +156,7 @@ declare namespace API {
    ** 新闻管理
    **********************/
   type NewsItemProps = {
+    title: string;
     content: string;
   };
 }

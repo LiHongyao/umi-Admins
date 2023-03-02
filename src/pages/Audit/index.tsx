@@ -22,6 +22,7 @@ const Audit: React.FC = () => {
   // - state
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Array<string>>([]);
+
   // - methods
   const audit = async (data: {
     type: 'RESOLVE' | 'REJECT';
@@ -56,6 +57,7 @@ const Audit: React.FC = () => {
       title: '提交作品',
       dataIndex: 'works',
       hideInSearch: true,
+      width: 120,
       render: (_, { works }) => <ImageBox src={works} width={100} height={60} />,
     },
     {
@@ -83,8 +85,9 @@ const Audit: React.FC = () => {
       title: '家园告白',
       dataIndex: 'desc',
       hideInSearch: true,
+      ellipsis: true
     },
-    { title: '业主姓名', dataIndex: 'name', hideInSearch: true, width: 120 },
+    { title: '业主姓名', dataIndex: 'name', hideInSearch: true, width: 100 },
     {
       title: '联系方式',
       dataIndex: 'mobile',
@@ -96,11 +99,13 @@ const Audit: React.FC = () => {
       dataIndex: 'roomName',
       hideInSearch: true,
       copyable: true,
+      ellipsis: true
     },
     {
       title: '操作',
       key: 'action',
       hideInSearch: true,
+      width: 140,
       render: (_, { state, id }) => (
         <Space>
           <Button
@@ -146,6 +151,7 @@ const Audit: React.FC = () => {
         search={{
           labelWidth: 'auto',
         }}
+        options={false}
         rowSelection={{
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
           getCheckboxProps({ state }) {

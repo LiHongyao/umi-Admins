@@ -1,5 +1,6 @@
 import AccessTree from '@/components/@lgs/AccessTree';
 import services from '@/services';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   ActionType,
   ModalForm,
@@ -9,7 +10,7 @@ import {
   ProFormText,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, message } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 
 const Roles: React.FC = () => {
@@ -41,42 +42,48 @@ const Roles: React.FC = () => {
 
   // -- columns
   const columns: ProColumns<API.SystemRoleProps>[] = [
-    {
-      title: '角色名称',
-      dataIndex: 'name',
-
-      valueEnum: {
-        1: { text: '管理员' },
-        2: { text: '市场部' },
-        3: { text: '运营部' },
-        4: { text: '品牌部' },
-      },
-      hideInSearch: true,
-    },
+    { title: '角色名称', dataIndex: 'roleName', hideInSearch: true },
     { title: '创建人', dataIndex: 'createBy', hideInSearch: true },
-    { title: '创建时间', dataIndex: 'createTime', hideInSearch: true },
+    { title: '创建时间', dataIndex: 'createDate', hideInSearch: true },
     { title: '更新人', dataIndex: 'updateBy', hideInSearch: true },
-    { title: '更新时间', dataIndex: 'updateTime', hideInSearch: true },
+    { title: '更新时间', dataIndex: 'updateDate', hideInSearch: true },
     {
       title: '操作',
       key: 'action',
       hideInSearch: true,
-      render: (_, record) => (
+      render: (_, record) => (<Space>
         <Button
-          type="link"
-          size="small"
           onClick={() => {
             vForm.current?.setFieldsValue({
               roleId: record.id,
-              name: record.name,
-              authIds: record.auths,
+              roleName: record.roleName,
+              authIds: record.authIds,
             });
             setOpenForm(true);
           }}
         >
           编辑
         </Button>
-      ),
+         <Button
+         danger
+         onClick={() => {
+           Modal.confirm({
+            content: "您确定要删除该角色么？",
+            cancelText: "点错了",
+            onOk: async  () => {
+              message.loading("处理中...", 20 * 1000);
+              const resp = await services.systems.roleDelete(record.id);
+              if(resp && resp.code === 200) {
+                setTips("角色删除成功");
+                vTable.current?.reload();
+              }
+            }
+           })
+         }}
+       >
+         删除
+       </Button>
+      </Space>),
     },
   ];
   return (
@@ -97,7 +104,8 @@ const Roles: React.FC = () => {
               setOpenForm(true);
             }}
           >
-            新建角色
+            <PlusOutlined />
+            <span>新建角色</span>
           </Button>,
         ]}
         pagination={{
@@ -130,19 +138,19 @@ const Roles: React.FC = () => {
           onCancel: () => setOpenForm(false),
         }}
         onFinish={async (value) => {
-          console.log(value);
-          message.loading('处理中，请稍后...');
-          setTimeout(() => {
-            message.destroy();
+          message.loading('处理中，请稍后...', 20 * 1000);
+          const resp = await services.systems.roleAddAndUpdate(value);
+          if(resp && resp.code === 200) {
+            setTips("添加成功");
             setOpenForm(false);
             vTable.current?.reload();
-          }, 1000);
+          }
         }}
       >
         <ProFormText name="roleId" noStyle hidden />
         <ProFormText
           label="角色名称"
-          name="name"
+          name="roleName"
           placeholder={'请输入角色名称'}
           rules={[{ required: true }]}
         />

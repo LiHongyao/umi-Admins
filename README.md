@@ -1,57 +1,13 @@
-# Ant Design Pro
+基于 Um + Ant-design-pro 构建的项目模板
 
-This project is initialized with [Ant Design Pro](https://pro.ant.design). Follow is the quick guide for how to use.
+## Guides
 
-## Environment Prepare
+1. 克隆项目
+2. 下载到本地
+3. 在编辑器中打开项目
+4. 在 **`configs/config.dev.ts`** 文件中修改 **后台A** 的IP 地址
+5. 执行启动项目指令：`npm run start` 
 
-Install `node_modules`:
+## Tips
 
-```bash
-npm install
-```
-
-or
-
-```bash
-yarn
-```
-
-## Provided Scripts
-
-Ant Design Pro provides some useful script to help you quick start and build with web project, code style check and test.
-
-Scripts provided in `package.json`. It's safe to modify or add additional script:
-
-### Start project
-
-```bash
-npm start
-```
-
-### Build project
-
-```bash
-npm run build
-```
-
-### Check code style
-
-```bash
-npm run lint
-```
-
-You can also use script to auto fix some lint error:
-
-```bash
-npm run lint:fix
-```
-
-### Test code
-
-```bash
-npm test
-```
-
-## More
-
-You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
+有任何问题欢迎留言，或+微信：17398888669

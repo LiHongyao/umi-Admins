@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 15:30:38
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 11:13:01
+ * @LastEditTime: 2023-03-02 14:53:29
  * @Description:
  */
 import AliyunOSSUpload from '@/components/@lgs/AliyunOSSUpload';
@@ -23,7 +23,7 @@ import {
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Image, message, Space } from 'antd';
+import { Button, Image, message, Space, Switch } from 'antd';
 import React, { useRef, useState } from 'react';
 
 const Banners: React.FC = () => {
@@ -54,29 +54,23 @@ const Banners: React.FC = () => {
         1: { text: '已启用' },
       },
       render: (_, { state, id }) => (
-        <ProFormSwitch
+        <Switch
           checkedChildren={'已启用'}
-          fieldProps={{
-            checked: !!state,
-            onChange: async (v) => {
-              message.loading('处理中..', 20 * 1000);
-              setTimeout(() => {
-                setDataSource((prev) =>
-                  prev.map((item) => (item.id === id ? { ...item, state: +v } : { ...item })),
-                );
-                message.destroy();
-                message.success(v ? '已启用' : '已禁用');
-              }, 1000);
-            },
+          checked={!!state}
+          onChange={async (v) => {
+            message.loading('处理中..', 20 * 1000);
+            setTimeout(() => {
+              setDataSource((prev) =>
+                prev.map((item) => (item.id === id ? { ...item, state: +v } : { ...item })),
+              );
+              message.destroy();
+              message.success(v ? '已启用' : '已禁用');
+            }, 1000);
           }}
         />
       ),
     },
-    {
-      title: '权重',
-      dataIndex: 'weight',
-      hideInSearch: true,
-    },
+    { title: '权重', dataIndex: 'weight', hideInSearch: true },
     {
       title: '跳转链接',
       tooltip: '请填写 Scheme 地址',

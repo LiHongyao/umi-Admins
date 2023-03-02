@@ -29,7 +29,7 @@ const Login: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   // -- model
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const {  setInitialState } = useModel('@@initialState');
 
   const containerClassName = useEmotionCss(() => {
     return {
@@ -90,24 +90,23 @@ const Login: React.FC = () => {
     <div className={containerClassName}>
       {/* 显示在标签上的标题：document.title */}
       <Helmet>
-        <title>登录 - RONGFA-Decoration</title>
+        <title>登录 - 后台管理系统</title>
       </Helmet>
       {/* 例子效果 */}
       <InitParticles />
       {/* 表单 */}
-      <div style={{ flex: '1', padding: '32px 0' }}>
+      <div style={{ flex: '1', padding: '32px 0', position: "relative" }}>
         <LoginForm
           formRef={vForm}
           contentStyle={{ minWidth: 280, maxWidth: '75vw' }}
           logo={
             <img
               alt="logo"
-              style={{ position: 'relative' }}
               src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
             />
           }
-          title="RONGFA-Decoration"
-          subTitle={'Rongfa decoration background management system'}
+          title="Umi-Admin"
+          subTitle={'Background management system template·Li-HONGYAO'}
           initialValues={{ memorize: true }}
           onFinish={async (values: API.LoginWithAccount & { memorize: boolean }) => {
             setErrorMsg('');
@@ -179,7 +178,7 @@ const Login: React.FC = () => {
               />
             </>
           )}
-          <div style={{ marginBottom: 24, position: 'relative' }}>
+          <div style={{ marginBottom: 24 }}>
             <ProFormCheckbox noStyle name="memorize">
               记住密码
             </ProFormCheckbox>

@@ -2,13 +2,15 @@
  * @Author: Lee
  * @Date: 2023-02-20 12:11:56
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-21 01:19:45
+ * @LastEditTime: 2023-03-02 16:10:04
  * @Description:
  */
 
 import { Request, Response } from 'express';
 import mockjs from 'mockjs';
-import access from './access';
+import ListAccess from './data/access';
+import ListRoles from './data/roles';
+import ListAdministrators from './data/administrators';
 
 const wait = (interval: number = 500) => {
   return new Promise((resolve) => {
@@ -17,35 +19,70 @@ const wait = (interval: number = 500) => {
 };
 
 export default {
-  /** 用户登录 */
-  'POST /admin/auths/login': async (req: Request, res: Response) => {
-    await wait();
-    res.send(
-      mockjs.mock({
-        code: 200,
-        data: {
-          token: '@guid',
-          access: [],
-          user: {
-            nickname: '李鸿耀',
-            avatar: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-          },
-        },
-      }),
-    );
-  },
-  /** 用户登出 */
-  'POST /admin/auths/logout': async (req: Request, res: Response) => {
-    await wait();
-    res.send(
-      mockjs.mock({
-        code: 200,
-        data: null,
-      }),
-    );
-  },
-  /** 轮播图 */
-  'POST /admin/banners/list': async (req: Request, res: Response) => {
+  /**********************
+   ** 管理员登录
+   **********************/
+  'POST /api/auths/login-admin': mockjs.mock({
+    code: 200,
+    data: {
+      token: '@guid',
+      access: [],
+      user: {
+        nickname: '李鸿耀',
+        avatar: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+      },
+    },
+  }),
+  'POST /api/auths/logout': { code: 200 },
+  /**********************
+   ** 用户管理
+   **********************/
+   'POST /api/users/list': mockjs.mock({
+    code: 200,
+    "data|10":[{
+      id: '@guid',
+      nickname: "@cname()",
+      avatarUrl: "@Image('80x80','@color')",
+      phone: "17398888669",
+      createDate: '@datetime("yyyy-MM-dd HH:mm:ss")'
+    }],
+  }),
+  'POST /api/feedback/list': mockjs.mock({
+    code: 200,
+    "data|10":[{
+      id: '@guid',
+      userId: "@guid",
+      nickname: "@cname()",
+      avatarUrl: "@Image('80x80','@color')",
+      phone: "17398888669",
+      content: "@paragraph(1)",
+      createDate: '@datetime("yyyy-MM-dd HH:mm:ss")'
+    }],
+  }),
+
+
+  /**********************
+   ** 系统管理
+   **********************/
+  'GET /api/systems/access/list': { code: 200, data: ListAccess },
+  "POST /api/systems/access/addOrUpdate": { code: 200},
+  "DELETE /api/systems/access/remove/:authId": { code: 200},
+
+
+  'GET /api/systems/roles/list': { code: 200, data: ListRoles },
+  "POST /api/systems/roles/addOrUpdate": { code: 200},
+  "DELETE /api/systems/roles/remove/:authId": { code: 200},
+
+  "POST /api/administrators/list": { code: 200, data: ListAdministrators },
+  "POST /api/administrators/addOrUpdate": { code: 200 },
+  "PUT /api/administrators/reset-psw/:id": { code: 200 },
+  "PUT /api/administrators/change-psw": { code: 200 },
+  "PUT /api/administrators/switch-status/:id": { code: 200 },
+
+  /**********************
+   ** 轮播广告
+   **********************/
+  'POST /api/banners/list': async (req: Request, res: Response) => {
     await wait();
     const { pageSize } = req.body;
     res.send(
@@ -56,7 +93,6 @@ export default {
             id: '@guid',
             'state|1': [0, 1],
             'weight|0-20': 0,
-            'sort|0-10': 2,
             start: '@datetime("yyyy-MM-dd HH:mm:ss")',
             end: '@datetime("yyyy-MM-dd HH:mm:ss")',
             bannerPic: "@Image('500x300','@color')",
@@ -71,61 +107,31 @@ export default {
       }),
     );
   },
-  'GET /admin/banners/show-location': async (req: Request, res: Response) => {
-    await wait();
-    res.send({
-      code: 200,
-      data: [
-        { locationName: '首页', locationCode: '10000' },
-        { locationName: '个人中心', locationCode: '20000' },
-        { locationName: '商品详情', locationCode: '30000' },
-      ],
-    });
+  'GET /api/banners/locations': {
+    code: 200,
+    data: [
+      { locationName: '首页', locationCode: '10000' },
+      { locationName: '个人中心', locationCode: '20000' },
+      { locationName: '商品详情', locationCode: '30000' },
+    ]
   },
-  'GET /admin/upload/ossConfigs': async (req: Request, res: Response) => {
+
+   /**********************
+    ** OSS-Configs
+    **********************/
+  'GET /api/upload/getSignForOSS': async (req: Request, res: Response) => {
     await wait();
     res.send({
       code: 200,
       data: [],
     });
   },
-  'GET /admin/systems/access': {
-    code: 200,
-    data: access,
-  },
-  'GET /admin/systems/roles': mockjs.mock({
-    code: 200,
-    'data|10': [
-      {
-        auths: [],
-        id: '@guid',
-        'name|1': ['管理员', '市场部', '运营部', '品牌部'],
-        createBy: '李鸿耀',
-        createTime: '@datetime("yyyy-MM-dd HH:mm:ss")',
-        updateBy: '李鸿耀',
-        updateTime: '@datetime("yyyy-MM-dd HH:mm:ss")',
-      },
-    ],
-  }),
 
-  'GET /admin/systems/users': mockjs.mock({
-    code: 200,
-    'data|5': [
-      {
-        id: '@guid',
-        avatar: "@Image('50x50','@color')",
-        nickname: '@cname()',
-        username: 'admin',
-        password: '123456',
-        createBy: '李鸿耀',
-        createTime: '@datetime("yyyy-MM-dd HH:mm:ss")',
-        lastLoginTime: '@datetime("yyyy-MM-dd HH:mm:ss")',
-        'roleId|1': [1, 2, 3, 4],
-        'state|1': [0, 1],
-      },
-    ],
-  }),
-  'POST /admin/audit/list': async (req: Request, res: Response) => {
+
+  /**********************
+    ** 审核列表
+    **********************/
+  'POST /api/audit/list': async (req: Request, res: Response) => {
     await wait();
     const { pageSize } = req.body;
     res.send(
@@ -151,7 +157,10 @@ export default {
       }),
     );
   },
-  // 新闻列表
+
+  /**********************
+    ** 新闻列表
+    **********************/
   'POST /admin/news/list': mockjs.mock({
     code: 200,
     'data|20': [
@@ -169,4 +178,17 @@ export default {
       total: 100,
     },
   }),
+
+  /**********************
+   ** 分类管理
+   **********************/
+  "GET /api/categories/list": { code: 200, data: [
+    { "name": "浆果类", "id": "63fd88d211eff45d5b846a8d" },
+    { "name": "瓜果类", "id": "63fd88d811eff45d5b846a90" },
+    { "name": "柑橘属", "id": "63fd88dd11eff45d5b846a93" },
+    { "name": "坚果类", "id": "63fd88e311eff45d5b846a96" },
+    { "name": "核果类", "id": "63fd88e811eff45d5b846a99" }
+  ]},
+  "POST /api/categories/addOrUpdate": { code: 200 },
+  "DELETE /api/categories/remove/:id": { code: 200 },
 };

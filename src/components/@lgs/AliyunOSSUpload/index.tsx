@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2022-06-21 20:39:22
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-20 15:07:51
+ * @LastEditTime: 2023-02-28 13:33:24
  * @Description: https://help.aliyun.com/document_detail/267439.html
  */
 
@@ -39,7 +39,7 @@ const AliyunOSSUpload: React.FC<IProps> = ({
   const init = async () => {
     try {
       const resp = await services.common.ossConfig<API.OSSConfigProps>();
-      if (resp && resp.code === 0) {
+      if (resp && resp.code === 200) {
         setOSSData(resp.data);
       }
     } catch (error: any) {
@@ -49,7 +49,6 @@ const AliyunOSSUpload: React.FC<IProps> = ({
 
   // -- events
   const handleChange: UploadProps['onChange'] = ({ fileList }) => {
-    console.log(fileList);
     onChange?.([...fileList]);
   };
 

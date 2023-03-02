@@ -2,7 +2,7 @@
  * @Author: Lee
  * @Date: 2023-02-20 11:39:12
  * @LastEditors: Lee
- * @LastEditTime: 2023-02-20 12:24:42
+ * @LastEditTime: 2023-03-02 15:09:51
  * @Description:
  */
 import type { RequestOptions } from '@@/plugin-request/request';
@@ -32,12 +32,13 @@ export const errorConfig: RequestConfig = {
       if (config.method && /get/i.test(config.method)) {
         config.params = { ...config.params, timeState: Date.now() };
       }
+      const token = localStorage.getItem('XXX_TOKEN') || '' ;
       return {
         ...config,
         headers: {
           ...config.headers,
           'Content-Type': 'application/json',
-          token: localStorage.getItem('XXX_TOKEN') || '',
+          Authorization: `Bearer ${token}`
         },
       };
     },

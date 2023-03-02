@@ -1,4 +1,5 @@
 import EditorWang from '@/components/@lgs/EditorWang';
+import PhoneModel from '@/components/@lgs/PhoneModel';
 import services from '@/services';
 import { PlusOutlined, RightOutlined } from '@ant-design/icons';
 import {
@@ -13,15 +14,16 @@ import {
 } from '@ant-design/pro-components';
 import { Button, message, Modal, Space } from 'antd';
 import React, { useRef, useState } from 'react';
-import "./index.less";
 const News: React.FC = () => {
+
   // - refs
   const vTable = useRef<ActionType>();
   const vForm = useRef<ProFormInstance>();
 
   // -- state
   const [openForm, setopenForm] = useState(false);
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
+  const [htmlString, setHtmlString] = useState('');
 
   // -- columns
   const columns: Array<ProColumns<API.NewsItemProps>> = [
@@ -53,8 +55,11 @@ const News: React.FC = () => {
       title: '新闻详情',
       key: 'content',
       hideInSearch: true,
-      render: (_, { content }) => (
-        <a onClick={() => setContent(content)}>
+      render: (_, { content, title }) => (
+        <a onClick={() => {
+          setTitle(title);
+          setHtmlString(content)
+        }}>
           <span>查看详情</span>
           <RightOutlined />
         </a>
@@ -99,36 +104,22 @@ const News: React.FC = () => {
 
   // -- renders
   return (
-    <PageContainer pageHeaderRender={() => null} className="news">
+    <PageContainer pageHeaderRender={() => null}>
       <ProTable<API.NewsItemProps>
         actionRef={vTable}
         headerTitle={'新闻管理'}
         options={false}
         toolBarRender={() => [
-          <Button>
+          <Button onClick={() => {
+            vForm.current?.resetFields();
+            setopenForm(true);
+          }}>
             <PlusOutlined />
-            新建
+            <span>新建</span>
           </Button>,
         ]}
         columns={columns}
         rowKey="id"
-        search={{
-          labelWidth: 'auto',
-          optionRender: (searchConfig, formProps, dom) => [
-            ...dom,
-            <Button
-              type="primary"
-              key="primary"
-              onClick={() => {
-                vForm.current?.resetFields();
-                setopenForm(true);
-              }}
-            >
-              <PlusOutlined />
-              新建
-            </Button>,
-          ],
-        }}
         pagination={{
           hideOnSinglePage: true,
           showTotal: (total) => `共 ${total} 条`,
@@ -161,7 +152,6 @@ const News: React.FC = () => {
           },
         }}
         onFinish={async (value) => {
-          console.log(value);
           message.loading('处理中，请稍后...');
           setTimeout(() => {
             message.destroy();
@@ -206,9 +196,9 @@ const News: React.FC = () => {
           <EditorWang />
         </ProFormText>
       </ModalForm>
-      <Modal open={!!content} title="新闻详情" onCancel={() => setContent('')} footer={null}>
-        <div className="rich-text" dangerouslySetInnerHTML={{ __html: content }}></div>
-      </Modal>
+
+      <PhoneModel open={!!htmlString} onCancel={() => setHtmlString('')} __html={htmlString} title={title}/>
+
     </PageContainer>
   );
 };
